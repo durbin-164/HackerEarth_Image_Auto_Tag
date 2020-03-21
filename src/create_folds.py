@@ -2,6 +2,14 @@ import pandas as pd
 from sklearn.model_selection import KFold
 
 if __name__ == "__main__":
+    train = pd.read_csv('../input/dataset/train.csv')
+    
+    Class_map={'Food':0,'Attire':1,'Decorationandsignage':2,'misc':3}
+    inverse_map={0:'Food',1:'Attire',2:'Decorationandsignage',3:'misc'}
+    
+    train['label']=train['Class'].map(Class_map)
+    train.to_csv('../input/dataset/train_mod.csv', index=False)
+
     df = pd.read_csv('../input/dataset/train_mod.csv')
     #print(df.head())
 
