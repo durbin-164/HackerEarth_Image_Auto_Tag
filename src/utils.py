@@ -29,6 +29,6 @@ def f1_score_cal(pred_y, y):
 
     y = y.cpu().numpy()
 
-    final_score = f1_score(y[:,0], y_pred, average='weighted')
+    final_score = f1_score(y, y_pred, average='weighted')
     
     return final_score
