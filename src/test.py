@@ -2,11 +2,10 @@ import os
 import ast
 import torch
 from model_dispatcher import MODEL_DISPATCHER
-from dataset import TrainDataset
+from dataset import TestDataset
 from torch import nn
+import pandas as pd
 from tqdm import tqdm
-from early_stoping import EarlyStopping
-from utils import f1_score_cal
 
 DEVICE = 'cuda'
 
@@ -53,7 +52,7 @@ def get_models():
     i =0
     for j in [0,1,2]:
         models.append(MODEL_DISPATCHER['resnet34'](pretrained=False))
-        models[i].load_state_dict(torch.load(f'../save_model/resnet34_folds({j}).bin'))
+        models[i].load_state_dict(torch.load(f'../save_model/resnet34_folds({j},).bin'))
         models[i].to(DEVICE)
         models[i].eval()
         i+=1
@@ -66,14 +65,14 @@ def save_submission(predictions):
     sub['Class']=sub['label'].map(inverse_map)
     sub = sub[['Image', 'Class']]
     sub.to_csv("../save_submission/submission.csv", index = False)
-    sub.head(5)
+    print(sub.head(5))
 
 
 def main():
     
     models = get_models()
 
-    test_dataset  = TrainDataset(
+    test_dataset  = TestDataset(
         img_height = IMAGE_HEIGHT,
         img_width = IMAGE_WIDTH,
         mean = MODEL_MEAN,
