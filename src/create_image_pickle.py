@@ -6,6 +6,7 @@ import albumentations
 import joblib
 import glob
 import os
+from tqdm import tqdm
 
 
 def augment(aug, image):
@@ -79,7 +80,7 @@ if __name__ == "__main__":
 
     counter=0
 
-    for file in files:
+    for j, file in tqdm(enumerate(files), total= len(files)):
         file_name = os.path.basename(file)
         label = train[train.Image==file_name].Class.iloc[0]
         image = Image.open(file)
