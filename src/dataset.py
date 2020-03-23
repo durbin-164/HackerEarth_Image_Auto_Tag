@@ -7,7 +7,7 @@ import torch
 
 class TrainDataset:
     def __init__(self,folds, img_height, img_width, mean, std):
-        df = pd.read_csv('../input/dataset/train_folds.csv')
+        df = pd.read_csv('../input/train_folds.csv')
         df = df[['Image','label', 'kfold']]
 
         df = df[df.kfold.isin(folds)].reset_index(drop = True)
@@ -30,15 +30,12 @@ class TrainDataset:
                                                 p = 0.9),
                 
                 albumentations.Rotate(limit = 5),
-                albumentations.RandomContrast(limit=0.2),
-                albumentations.GaussianBlur(blur_limit=7),
                 albumentations.RandomGamma(),
                 albumentations.RandomShadow(),
-                albumentations.GaussNoise(),
-                albumentations.ChannelShuffle(),
+                albumentations.RandomGridShuffle(),
                 albumentations.Cutout(),
-                albumentations.Equalize(),
-                albumentations.MultiplicativeNoise(),
+                albumentations.CoarseDropout(),
+                albumentations.GridDistortion(),
 
                 albumentations.Normalize(mean, std, always_apply = True)
             ])
@@ -49,7 +46,7 @@ class TrainDataset:
     
     def __getitem__(self, item):
         
-        image = Image.open(f'../input/dataset/Train Images/{self.image_ids[item]}')
+        image = Image.open(f'../input/image_pickles/{self.image_ids[item]}.pkl')
 
         
 
@@ -57,7 +54,7 @@ class TrainDataset:
         image = image.convert("RGB")
         image = self.aug(image = np.array(image))["image"]
 
-        image = np.transpose(image, (2,0,1)).astype(np.float32)
+        image = np.transpose(image, (2,0,1)).astype(np.float32)/255.0
 
         return {
             'image': torch.tensor(image, dtype = torch.float),
@@ -93,7 +90,7 @@ class TestDataset:
         image = image.convert("RGB")
         image = self.aug(image = np.array(image))["image"]
 
-        image = np.transpose(image, (2,0,1)).astype(np.float32)
+        image = np.transpose(image, (2,0,1)).astype(np.float32)/255.0
 
         return {
             'image': torch.tensor(image, dtype = torch.float),
