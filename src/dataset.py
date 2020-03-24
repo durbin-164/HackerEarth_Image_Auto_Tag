@@ -28,11 +28,28 @@ class TrainDataset:
                                                 scale_limit=0.1,
                                                 rotate_limit=5,
                                                 p = 0.9),
+
+                albumentations.OneOf([
+                    albumentations.Rotate(limit = 5),
+                    albumentations.RandomGamma(),
+                    albumentations.RandomShadow(),
+                    albumentations.RandomGridShuffle(),
+                    albumentations.ElasticTransform(),
+                ])  ,
                 
-                albumentations.Rotate(limit = 5),
-                albumentations.RandomGamma(),
-                albumentations.RandomShadow(),
-                albumentations.RandomGridShuffle(),
+                albumentations.OneOf([
+                    albumentations.Blur(),
+                    albumentations.MedianBlur(),
+                    albumentations.MotionBlur(),
+                    albumentations.GaussianBlur(),
+
+                ]),
+
+                albumentations.OneOf([
+                    albumentations.RandomBrightness(),
+                    albumentations.RandomContrast(),
+                    albumentations.RandomBrightnessContrast(),
+                ]),
 
                 albumentations.OneOf([
                     albumentations.Cutout(),
@@ -41,7 +58,6 @@ class TrainDataset:
 
                 ]),
                 
-                albumentations.ElasticTransform(),
 
                 albumentations.OneOf([
                     albumentations.HorizontalFlip(),

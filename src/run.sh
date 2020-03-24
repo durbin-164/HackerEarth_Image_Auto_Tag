@@ -4,14 +4,14 @@ export IMAGE_HEIGHT=256
 export IMAGE_WIDTH=256
 export EPOCHS=100
 
-export TRAIN_BATCH_SIZE=64
-export TEST_BATCH_SIZE=32
+export TRAIN_BATCH_SIZE=32
+export TEST_BATCH_SIZE=16
 
 export MODEL_MEAN="(0.485, 0.456, 0.406)"
 export MODEL_STD="(0.229, 0.224, 0.225)"
 
 
-export BASE_MODEL="resnet34"
+export BASE_MODEL="effectnet"
 
 export TRAINING_FOLDS="(0, 1,2,3)"
 export VALIDATION_FOLDS="(4,)"

@@ -17,6 +17,8 @@ TEST_BATCH_SIZE = int(os.environ.get("TEST_BATCH_SIZE"))
 MODEL_MEAN = ast.literal_eval(os.environ.get("MODEL_MEAN"))
 MODEL_STD = ast.literal_eval(os.environ.get("MODEL_STD"))
 
+BASE_MODEL = os.environ.get("BASE_MODEL")
+
 
 def predict_to_numpy(predict):
     return torch.nn.functional.softmax(predict, dim=1).data.cpu().numpy().argmax(axis=1)
@@ -51,8 +53,8 @@ def get_models():
     models =[]
     i =0
     for j in [0,1,2,3,4]:
-        models.append(MODEL_DISPATCHER['resnet34'](pretrained=False))
-        models[i].load_state_dict(torch.load(f'../save_model/resnet34_folds({j},).bin'))
+        models.append(MODEL_DISPATCHER[BASE_MODEL](pretrained=False))
+        models[i].load_state_dict(torch.load(f'../save_model/{BASE_MODEL}_folds({j},).bin'))
         models[i].to(DEVICE)
         models[i].eval()
         i+=1
