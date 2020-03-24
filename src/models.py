@@ -12,13 +12,19 @@ class ResNet34(nn.Module):
         else:
             self.model = pretrainedmodels.__dict__['resnet34'](pretrained = None)
         
-        self.l0 = nn.Linear(512, 4)
+        self.fc0 = nn.Linear(512, 128)
+        self.l0 = nn.Linear(128,4)
+        self.dropout = nn.Dropout(p=0.4)
+        self.relu = nn.ReLU()
         
     
     def forward(self, x):
         bs, _,_,_ = x.shape
         x = self.model.features(x)
         x = F.adaptive_avg_pool2d(x, 1).reshape(bs, -1)
+        x = self.dropout(x)
+        x = self.relu(self.fc0(x))
+        x = self.dropout(x)
         l0 = self.l0(x)
 
         return l0

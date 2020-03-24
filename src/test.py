@@ -50,7 +50,7 @@ def get_prediction( data_loader, models):
 def get_models():
     models =[]
     i =0
-    for j in [0,1,2]:
+    for j in [0,1,2,3,4]:
         models.append(MODEL_DISPATCHER['resnet34'](pretrained=False))
         models[i].load_state_dict(torch.load(f'../save_model/resnet34_folds({j},).bin'))
         models[i].to(DEVICE)
