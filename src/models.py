@@ -160,16 +160,17 @@ class EfficientNetWrapper(nn.Module):
         super(EfficientNetWrapper, self).__init__()
 
         if pretrained:
-            self.model = EfficientNet.from_pretrained('efficientnet-b2')
+            self.model = EfficientNet.from_pretrained('efficientnet-b5')
         else:
-            self.model = EfficientNet.from_name('efficientnet-b2')
+            self.model = EfficientNet.from_name('efficientnet-b5')
         
         # Appdend output layers based on our date
        
         self.dropout = nn.Dropout(p=0.4)
 
-        self.fc0 = nn.Linear(1000, 128)
-        self.fc1 = nn.Linear(128, 4)
+        self.fc0 = nn.Linear(1000, 512)
+        self.fc1 = nn.Linear(512,128)
+        self.fc2 = nn.Linear(128, 4)
         self.relu = nn.ReLU()
         
         
@@ -178,6 +179,8 @@ class EfficientNetWrapper(nn.Module):
         x = self.dropout(x)
         x = self.relu(self.fc0(x))
         x = self.dropout(x)
-        out = self.fc1(x)
+        x = self.relu(self.fc1(x))
+        x = self.dropout(x)
+        out = self.fc2(x)
         
         return out

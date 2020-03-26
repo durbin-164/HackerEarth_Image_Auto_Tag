@@ -7,7 +7,7 @@ import torch
 
 class TrainDataset:
     def __init__(self,folds, img_height, img_width, mean, std):
-        df = pd.read_csv('../input/dataset/train_folds.csv')
+        df = pd.read_csv('../input/train_folds_new.csv')
         df = df[['Image','label', 'kfold']]
 
         df = df[df.kfold.isin(folds)].reset_index(drop = True)
@@ -24,12 +24,13 @@ class TrainDataset:
         else:
             self.aug = albumentations.Compose([
                 albumentations.Resize(img_height, img_width),
-                albumentations.ShiftScaleRotate(shift_limit=0.0625, 
+                
+
+                albumentations.OneOf([
+                    albumentations.ShiftScaleRotate(shift_limit=0.0625, 
                                                 scale_limit=0.1,
                                                 rotate_limit=5,
                                                 p = 0.9),
-
-                albumentations.OneOf([
                     albumentations.Rotate(limit = 5),
                     albumentations.RandomGamma(),
                     albumentations.RandomShadow(),
@@ -61,13 +62,22 @@ class TrainDataset:
 
                 albumentations.OneOf([
                     albumentations.HorizontalFlip(),
-                    albumentations.VerticalFlip()
+                    albumentations.VerticalFlip(),
+                    albumentations.RandomRotate90()
                  ]),
 
                  albumentations.OneOf([
                      albumentations.GaussNoise(),
-                     albumentations.IAAAdditiveGaussianNoise()
+                     albumentations.IAAAdditiveGaussianNoise(),
+                     albumentations.ISONoise()
                  ]),
+
+                # albumentations.OneOf([
+                #      albumentations.RandomSnow(),
+                #      albumentations.RandomRain(),
+                #      albumentations.RandomFog(),
+                #  ]),
+
 
 
                 albumentations.Normalize(mean, std, always_apply = True)
@@ -79,12 +89,12 @@ class TrainDataset:
     
     def __getitem__(self, item):
         
-        image = Image.open(f'../input/dataset/Train Images/{self.image_ids[item]}')
+        image = joblib.load(f'../input/image_pickles/{self.image_ids[item]}.pkl')
 
         
 
         #image = image.reshape(137,236).astype(float)
-        image = image.convert("RGB")
+        #image = image.convert("RGB")
         image = self.aug(image = np.array(image))["image"]
 
         image = np.transpose(image, (2,0,1)).astype(np.float32)/255.0

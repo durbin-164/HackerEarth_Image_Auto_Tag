@@ -20,15 +20,16 @@ if __name__ == "__main__":
     X = df.Image.values
     y = df.label.values
 
-    kfold = KFold(5, True, 42)
+    kfold = KFold(7, True, 100)
 
 
     for fold, (trn_, val_) in enumerate(kfold.split(X,y)):
-        print("Train: ", trn_, "Val: ", val_)
+        #print("Train: ", trn_, "Val: ", val_)
+        #print(fold)
         
         df.loc[val_, 'kfold'] = fold
 
-    #print(df.kfold.value_counts)
+    print(df.kfold.value_counts())
     df.to_csv("../input/dataset/train_folds.csv", index = False)
 
 

@@ -29,7 +29,7 @@ def get_prediction( data_loader, models):
     total_model = float(len(models))
 
     with torch.no_grad():
-        for bi, d in enumerate(data_loader):
+        for bi, d in tqdm(enumerate(data_loader), total=int(len(data_loader))):
             image = d["image"]
             img_id = d["image_id"]
             image = image.to(DEVICE, dtype = torch.float)
@@ -52,7 +52,7 @@ def get_prediction( data_loader, models):
 def get_models():
     models =[]
     i =0
-    for j in [0,1,2,3,4]:
+    for j in [0,1,2,3,4,5,6]:
         models.append(MODEL_DISPATCHER[BASE_MODEL](pretrained=False))
         models[i].load_state_dict(torch.load(f'../save_model/{BASE_MODEL}_folds({j},).bin'))
         models[i].to(DEVICE)

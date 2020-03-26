@@ -72,7 +72,7 @@ def pre_porcess(height=256, width=256, p=1.0):
 
 if __name__ == "__main__":
 
-    train = pd.read_csv('../input/dataset/train.csv')
+    train = pd.read_csv('../input/dataset/train_folds.csv')
 
     files = glob.glob('../input/dataset/Train Images/*')
     
@@ -82,7 +82,10 @@ if __name__ == "__main__":
 
     for j, file in tqdm(enumerate(files), total= len(files)):
         file_name = os.path.basename(file)
-        label = train[train.Image==file_name].Class.iloc[0]
+        data_row = train[train.Image==file_name]
+        label = data_row.label.iloc[0]
+        kfold = data_row.kfold.iloc[0]
+
         image = Image.open(file)
         image = image.convert("RGB")
 
@@ -92,7 +95,7 @@ if __name__ == "__main__":
         new_file_name = f"image{counter}"
         counter+=1
         joblib.dump(image, f"../input/image_pickles/{new_file_name}.pkl")
-        dataset.append((new_file_name, label))
+        dataset.append((new_file_name, label, kfold))
 
         #augment -1
         aug = h_flip_blur(p=1.0)
@@ -100,7 +103,7 @@ if __name__ == "__main__":
         new_file_name = f"image{counter}"
         counter+=1
         joblib.dump(image, f"../input/image_pickles/{new_file_name}.pkl")
-        dataset.append((new_file_name, label))
+        dataset.append((new_file_name, label, kfold))
 
         #augment -2
         aug = v_flib_g_blur(p=1.0)
@@ -108,7 +111,7 @@ if __name__ == "__main__":
         new_file_name = f"image{counter}"
         counter+=1
         joblib.dump(image, f"../input/image_pickles/{new_file_name}.pkl")
-        dataset.append((new_file_name, label))
+        dataset.append((new_file_name, label, kfold))
 
         #augment -3
         aug = r_ss_roate_m_blur(p=1.0)
@@ -116,7 +119,7 @@ if __name__ == "__main__":
         new_file_name = f"image{counter}"
         counter+=1
         joblib.dump(image, f"../input/image_pickles/{new_file_name}.pkl")
-        dataset.append((new_file_name, label))
+        dataset.append((new_file_name, label, kfold))
 
         
         if label in ['misc', 'Attire', 'Decorationandsignage']:
@@ -126,7 +129,7 @@ if __name__ == "__main__":
             new_file_name = f"image{counter}"
             counter+=1
             joblib.dump(image, f"../input/image_pickles/{new_file_name}.pkl")
-            dataset.append((new_file_name, label))
+            dataset.append((new_file_name, label, kfold))
 
         if label in [ 'misc', 'Decorationandsignage']:
             #augment -5
@@ -135,7 +138,7 @@ if __name__ == "__main__":
             new_file_name = f"image{counter}"
             counter+=1
             joblib.dump(image, f"../input/image_pickles/{new_file_name}.pkl")
-            dataset.append((new_file_name, label))
+            dataset.append((new_file_name, label, kfold))
 
         if label in ['Decorationandsignage']:
             #augment -6
@@ -144,7 +147,7 @@ if __name__ == "__main__":
             new_file_name = f"image{counter}"
             counter+=1
             joblib.dump(image, f"../input/image_pickles/{new_file_name}.pkl")
-            dataset.append((new_file_name, label))
+            dataset.append((new_file_name, label, kfold))
 
             #augment -7
             aug = elastic_tranform_r_brightness(p=1.0)
@@ -152,10 +155,10 @@ if __name__ == "__main__":
             new_file_name = f"image{counter}"
             counter+=1
             joblib.dump(image, f"../input/image_pickles/{new_file_name}.pkl")
-            dataset.append((new_file_name, label))
+            dataset.append((new_file_name, label, kfold))
 
 
     print(counter)
 
-    train_new = pd.DataFrame(dataset, columns = ["Image", "Class"])
-    train_new.to_csv("../input/train_new.csv", index = False)
+    train_new = pd.DataFrame(dataset, columns = ["Image", "label", "kfold"])
+    train_new.to_csv("../input/train_folds_new.csv", index = False)
