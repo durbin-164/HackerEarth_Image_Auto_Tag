@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch.nn import functional as F
 from ghost_net import ghost_net
 from efficientnet_pytorch import EfficientNet
+from torchvision.models import resnext101_32x8d
 
 class ResNet34(nn.Module):
     def __init__(self,pretrained):
@@ -160,13 +161,13 @@ class EfficientNetWrapper(nn.Module):
         super(EfficientNetWrapper, self).__init__()
 
         if pretrained:
-            self.model = EfficientNet.from_pretrained('efficientnet-b5')
+            self.model = EfficientNet.from_pretrained('efficientnet-b3')
         else:
-            self.model = EfficientNet.from_name('efficientnet-b5')
+            self.model = EfficientNet.from_name('efficientnet-b3')
         
         # Appdend output layers based on our date
        
-        self.dropout = nn.Dropout(p=0.4)
+        self.dropout = nn.Dropout(p=0.5)
 
         self.fc0 = nn.Linear(1000, 512)
         self.fc1 = nn.Linear(512,128)
@@ -183,4 +184,33 @@ class EfficientNetWrapper(nn.Module):
         x = self.dropout(x)
         out = self.fc2(x)
         
+        return out
+
+
+
+class ResNext101(nn.Module):
+    def __init__(self,pretrained):
+        super(ResNext101, self).__init__()
+        if pretrained == True:
+            self.model = resnext101_32x8d(pretrained=True)
+        else:
+            self.model = resnext101_32x8d(pretrained=False)
+        
+        self.dropout = nn.Dropout(p=0.5)
+
+        self.fc0 = nn.Linear(1000, 512)
+        self.fc1 = nn.Linear(512,128)
+        self.fc2 = nn.Linear(128, 4)
+        self.relu = nn.ReLU()
+        
+    
+    def forward(self, x):
+        x = self.model(x)
+        x = self.dropout(x)
+        x = self.relu(self.fc0(x))
+        x = self.dropout(x)
+        x = self.relu(self.fc1(x))
+        x = self.dropout(x)
+        out = self.fc2(x)
+
         return out

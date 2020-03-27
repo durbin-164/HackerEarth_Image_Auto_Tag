@@ -7,5 +7,6 @@ MODEL_DISPATCHER = {
     'resnet152': models.ResNet152,
     'inceptionv3': models.InceptionV3,
     'ghostnet': models.GhostNet,
-    'effectnet': models.EfficientNetWrapper
+    'effectnet': models.EfficientNetWrapper,
+    'resnext100': models.ResNext101
 }
